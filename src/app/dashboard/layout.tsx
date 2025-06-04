@@ -13,7 +13,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ReactNode } from "react";
 import { redirect } from "next/navigation";
 // import Logo from "@/public/logo.png";
-// import Image from "next/image";
+import Image from "next/image";
 import { Toaster } from "@/components/ui/sonner";
 import { prisma } from "@/lib/prisma";
 import { auth, signOut } from "../../../auth";
@@ -49,8 +49,8 @@ export default async function Dashboard({ children }: { children: ReactNode }) {
     return redirect("/");
   }
 
-  const data = await getData(session.user.id as string);
-  console.log(data, data);
+  // const data = await getData(session.user.id as string);
+  // console.log(data, data);
 
   return (
     <>
@@ -105,13 +105,13 @@ export default async function Dashboard({ children }: { children: ReactNode }) {
                     size="icon"
                     className="rounded-full"
                   >
-                    {/* <Image
+                    <Image
                       src={session.user.image as string}
                       alt="Profile"
                       width={20}
                       height={20}
                       className="w-full h-full rounded-full"
-                    /> */}
+                    />
                     <span className="sr-only">Toggle user menu</span>
                   </Button>
                 </DropdownMenuTrigger>

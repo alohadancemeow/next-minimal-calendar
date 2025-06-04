@@ -2,9 +2,9 @@
 import Link from "next/link";
 // import Logo from "@/public/logo.png";
 
-// import { ThemeToggle } from "../dashboard/ThemeToggle";
 import { AuthModal } from "./AuthModal";
 import { CalendarDays } from "lucide-react";
+import { ThemeToggle } from "../dashboard/ThemeToggle";
 
 export function Navbar() {
   return (
@@ -17,12 +17,13 @@ export function Navbar() {
             My<span className="text-primary">Calendar</span>
           </h4>
         </Link>
-        <div className="md:hidden">{/* <ThemeToggle /> */}</div>
+        <div className="md:hidden">
+          <ThemeToggle />
+        </div>
       </div>
 
       <nav className="hidden md:flex md:justify-end md:space-x-4">
-        {/* <ThemeToggle /> */}
-
+        <ThemeToggle />
         <AuthModal />
       </nav>
     </div>
