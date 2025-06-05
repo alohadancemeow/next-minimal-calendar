@@ -8,6 +8,7 @@ import { parseWithZod } from "@conform-to/zod";
 
 export async function onboardingAction(prevState: unknown, formData: FormData) {
   const session = await requireUser();
+  if (!session) return { status: "error", message: "Unauthorized" };
 
   const submission = await parseWithZod(formData, {
     schema: onboardingSchema({

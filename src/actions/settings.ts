@@ -8,6 +8,7 @@ import { redirect } from "next/navigation";
 
 export async function SettingsAction(prevState: unknown, formData: FormData) {
   const session = await requireUser();
+  if (!session) return { status: "error", message: "Unauthorized" };
 
   const submission = parseWithZod(formData, {
     schema: aboutSettingsSchema,
