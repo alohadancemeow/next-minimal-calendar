@@ -114,133 +114,133 @@ import { redirect } from "next/navigation";
 //   return redirect("/dashboard");
 // }
 
-export async function CreateEventTypeAction(
-  prevState: any,
-  formData: FormData
-) {
-  const session = await requireUser();
+// export async function CreateEventTypeAction(
+//   prevState: any,
+//   formData: FormData
+// ) {
+//   const session = await requireUser();
 
-  const submission = await parseWithZod(formData, {
-    schema: EventTypeServerSchema({
-      async isUrlUnique() {
-        const data = await prisma.eventType.findFirst({
-          where: {
-            userId: session.user?.id,
-            url: formData.get("url") as string,
-          },
-        });
-        return !data;
-      },
-    }),
+//   const submission = await parseWithZod(formData, {
+//     schema: EventTypeServerSchema({
+//       async isUrlUnique() {
+//         const data = await prisma.eventType.findFirst({
+//           where: {
+//             userId: session.user?.id,
+//             url: formData.get("url") as string,
+//           },
+//         });
+//         return !data;
+//       },
+//     }),
 
-    async: true,
-  });
-  if (submission.status !== "success") {
-    return submission.reply();
-  }
+//     async: true,
+//   });
+//   if (submission.status !== "success") {
+//     return submission.reply();
+//   }
 
-  const data = await prisma.eventType.create({
-    data: {
-      title: submission.value.title,
-      duration: submission.value.duration,
-      url: submission.value.url,
-      description: submission.value.description,
-      userId: session.user?.id as string,
-      videoCallSoftware: submission.value.videoCallSoftware,
-    },
-  });
+//   const data = await prisma.eventType.create({
+//     data: {
+//       title: submission.value.title,
+//       duration: submission.value.duration,
+//       url: submission.value.url,
+//       description: submission.value.description,
+//       userId: session.user?.id as string,
+//       videoCallSoftware: submission.value.videoCallSoftware,
+//     },
+//   });
 
-  return redirect("/dashboard");
-}
+//   return redirect("/dashboard");
+// }
 
-export async function EditEventTypeAction(prevState: any, formData: FormData) {
-  const session = await requireUser();
+// export async function EditEventTypeAction(prevState: any, formData: FormData) {
+//   const session = await requireUser();
 
-  const submission = await parseWithZod(formData, {
-    schema: EventTypeServerSchema({
-      async isUrlUnique() {
-        const data = await prisma.eventType.findFirst({
-          where: {
-            userId: session.user?.id,
-            url: formData.get("url") as string,
-          },
-        });
-        return !data;
-      },
-    }),
+//   const submission = await parseWithZod(formData, {
+//     schema: EventTypeServerSchema({
+//       async isUrlUnique() {
+//         const data = await prisma.eventType.findFirst({
+//           where: {
+//             userId: session.user?.id,
+//             url: formData.get("url") as string,
+//           },
+//         });
+//         return !data;
+//       },
+//     }),
 
-    async: true,
-  });
+//     async: true,
+//   });
 
-  if (submission.status !== "success") {
-    return submission.reply();
-  }
+//   if (submission.status !== "success") {
+//     return submission.reply();
+//   }
 
-  const data = await prisma.eventType.update({
-    where: {
-      id: formData.get("id") as string,
-      userId: session.user?.id as string,
-    },
-    data: {
-      title: submission.value.title,
-      duration: submission.value.duration,
-      url: submission.value.url,
-      description: submission.value.description,
-      videoCallSoftware: submission.value.videoCallSoftware,
-    },
-  });
+//   const data = await prisma.eventType.update({
+//     where: {
+//       id: formData.get("id") as string,
+//       userId: session.user?.id as string,
+//     },
+//     data: {
+//       title: submission.value.title,
+//       duration: submission.value.duration,
+//       url: submission.value.url,
+//       description: submission.value.description,
+//       videoCallSoftware: submission.value.videoCallSoftware,
+//     },
+//   });
 
-  return redirect("/dashboard");
-}
+//   return redirect("/dashboard");
+// }
 
-export async function DeleteEventTypeAction(formData: FormData) {
-  const session = await requireUser();
+// export async function DeleteEventTypeAction(formData: FormData) {
+//   const session = await requireUser();
 
-  const data = await prisma.eventType.delete({
-    where: {
-      id: formData.get("id") as string,
-      userId: session.user?.id as string,
-    },
-  });
+//   const data = await prisma.eventType.delete({
+//     where: {
+//       id: formData.get("id") as string,
+//       userId: session.user?.id as string,
+//     },
+//   });
 
-  return redirect("/dashboard");
-}
+//   return redirect("/dashboard");
+// }
 
-export async function updateEventTypeStatusAction(
-  prevState: any,
-  {
-    eventTypeId,
-    isChecked,
-  }: {
-    eventTypeId: string;
-    isChecked: boolean;
-  }
-) {
-  try {
-    const session = await requireUser();
+// export async function updateEventTypeStatusAction(
+//   prevState: any,
+//   {
+//     eventTypeId,
+//     isChecked,
+//   }: {
+//     eventTypeId: string;
+//     isChecked: boolean;
+//   }
+// ) {
+//   try {
+//     const session = await requireUser();
 
-    const data = await prisma.eventType.update({
-      where: {
-        id: eventTypeId,
-        userId: session.user?.id as string,
-      },
-      data: {
-        active: isChecked,
-      },
-    });
+//     const data = await prisma.eventType.update({
+//       where: {
+//         id: eventTypeId,
+//         userId: session.user?.id as string,
+//       },
+//       data: {
+//         active: isChecked,
+//       },
+//     });
 
-    revalidatePath(`/dashboard`);
-    return {
-      status: "success",
-      message: "EventType Status updated successfully",
-    };
-  } catch (error) {
-    return {
-      status: "error",
-      message: "Something went wrong",
-    };
-  }
-}
+//     revalidatePath(`/dashboard`);
+//     return {
+//       status: "success",
+//       message: "EventType Status updated successfully",
+//     };
+//   } catch (error) {
+//     return {
+//       status: "error",
+//       message: "Something went wrong",
+//     };
+//   }
+// }
 
 // export async function updateAvailabilityAction(formData: FormData) {
 //   const session = await requireUser();

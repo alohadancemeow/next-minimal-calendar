@@ -8,7 +8,6 @@ import { redirect } from "next/navigation";
 
 export async function SettingsAction(prevState: unknown, formData: FormData) {
   const session = await requireUser();
-  if (!session) return { status: "error", message: "Unauthorized" };
 
   const submission = parseWithZod(formData, {
     schema: aboutSettingsSchema,
@@ -18,15 +17,20 @@ export async function SettingsAction(prevState: unknown, formData: FormData) {
     return submission.reply();
   }
 
-  await prisma.user.update({
-    where: {
-      id: session.user?.id as string,
-    },
-    data: {
-      name: submission.value.fullName,
-      image: submission.value.profileImage,
-    },
-  });
+  try {
+    await prisma.user.update({
+      where: {
+        id: session.user?.id as string,
+      },
+      data: {
+        name: submission.value.fullName,
+        image: submission.value.profileImage,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    // return { error: "Failed to update settings" };
+  }
 
-  return redirect("/dashboard");
+  redirect("/dashboard");
 }

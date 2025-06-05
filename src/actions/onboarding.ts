@@ -8,7 +8,6 @@ import { parseWithZod } from "@conform-to/zod";
 
 export async function onboardingAction(prevState: unknown, formData: FormData) {
   const session = await requireUser();
-  if (!session) return { status: "error", message: "Unauthorized" };
 
   const submission = await parseWithZod(formData, {
     schema: onboardingSchema({
@@ -29,56 +28,60 @@ export async function onboardingAction(prevState: unknown, formData: FormData) {
     return submission.reply();
   }
 
-  const OnboardingData = await prisma.user.update({
-    where: {
-      id: session.user?.id,
-    },
-    data: {
-      username: submission.value.username,
-      name: submission.value.fullName,
-      Availability: {
-        createMany: {
-          data: [
-            {
-              day: "Monday",
-              fromTime: "08:00",
-              tillTime: "18:00",
-            },
-            {
-              day: "Tuesday",
-              fromTime: "08:00",
-              tillTime: "18:00",
-            },
-            {
-              day: "Wednesday",
-              fromTime: "08:00",
-              tillTime: "18:00",
-            },
-            {
-              day: "Thursday",
-              fromTime: "08:00",
-              tillTime: "18:00",
-            },
-            {
-              day: "Friday",
-              fromTime: "08:00",
-              tillTime: "18:00",
-            },
-            {
-              day: "Saturday",
-              fromTime: "08:00",
-              tillTime: "18:00",
-            },
-            {
-              day: "Sunday",
-              fromTime: "08:00",
-              tillTime: "18:00",
-            },
-          ],
+  try {
+    await prisma.user.update({
+      where: {
+        id: session.user?.id,
+      },
+      data: {
+        username: submission.value.username,
+        name: submission.value.fullName,
+        Availability: {
+          createMany: {
+            data: [
+              {
+                day: "Monday",
+                fromTime: "08:00",
+                tillTime: "18:00",
+              },
+              {
+                day: "Tuesday",
+                fromTime: "08:00",
+                tillTime: "18:00",
+              },
+              {
+                day: "Wednesday",
+                fromTime: "08:00",
+                tillTime: "18:00",
+              },
+              {
+                day: "Thursday",
+                fromTime: "08:00",
+                tillTime: "18:00",
+              },
+              {
+                day: "Friday",
+                fromTime: "08:00",
+                tillTime: "18:00",
+              },
+              {
+                day: "Saturday",
+                fromTime: "08:00",
+                tillTime: "18:00",
+              },
+              {
+                day: "Sunday",
+                fromTime: "08:00",
+                tillTime: "18:00",
+              },
+            ],
+          },
         },
       },
-    },
-  });
+    });
+  } catch (error) {
+    console.log(error, "error");
+  }
 
-  return redirect("/onboarding/grant-id");
+  redirect("/onboarding/grant-id");
 }

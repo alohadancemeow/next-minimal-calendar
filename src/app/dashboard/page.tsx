@@ -1,4 +1,3 @@
-import React from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -80,7 +79,7 @@ const DashbaordPage = async () => {
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {data.EventType.map((item) => (
             <div
-              className="  overflow-hidden shadow rounded-lg border relative"
+              className="overflow-hidden shadow rounded-lg border relative"
               key={item.id}
             >
               <div className="absolute top-2 right-2">
@@ -147,9 +146,8 @@ const DashbaordPage = async () => {
                   initialChecked={item.active}
                   eventTypeId={item.id}
                 />
-
                 <Link href={`/dashboard/event/${item.id}`}>
-                  <Button className="">Edit Event</Button>
+                  <Button className="text-white">Edit Event</Button>
                 </Link>
               </div>
             </div>
