@@ -1,7 +1,5 @@
 "use client";
 
-import { SubmitButton } from "@/components/SubmitButton";
-import { eventTypeSchema } from "@/lib/zodSchemas";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,6 +11,13 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import Link from "next/link";
+import { SubmitButton } from "../SubmitButton";
+import { useForm } from "@conform-to/react";
+import { parseWithZod } from "@conform-to/zod";
+import { eventTypeSchema } from "@/lib/zodSchemas";
+import { EditEventTypeAction } from "@/actions/event";
 import {
   Select,
   SelectContent,
@@ -22,18 +27,29 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { useForm } from "@conform-to/react";
-import { parseWithZod } from "@conform-to/zod";
-import Link from "next/link";
 import { useActionState, useState } from "react";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { CreateEventTypeAction } from "@/actions/event";
+
+interface iAppProps {
+  id: string;
+  title: string;
+  url: string;
+  description: string;
+  duration: number;
+  callProvider: string;
+}
 
 type Platform = "Zoom Meeting" | "Google Meet" | "Microsoft Teams";
 
-const CreateNewEvent = () => {
-  const [lastResult, action] = useActionState(CreateEventTypeAction, undefined);
+export function EditEventTypeForm({
+  description,
+  duration,
+  title,
+  url,
+  callProvider,
+  id,
+}: iAppProps) {
+  const [lastResult, action] = useActionState(EditEventTypeAction, undefined);
   const [form, fields] = useForm({
     lastResult,
     onValidate({ formData }) {
@@ -42,13 +58,13 @@ const CreateNewEvent = () => {
     shouldValidate: "onBlur",
     shouldRevalidate: "onInput",
   });
-  const [activePlatform, setActivePlatform] = useState<Platform>("Google Meet");
+  const [activePlatform, setActivePlatform] = useState<Platform>(
+    callProvider as Platform
+  );
 
   const togglePlatform = (platform: Platform) => {
     setActivePlatform(platform);
   };
-
-  //   console.log(activePlatform, "activePlatform");
 
   return (
     <div className="h-full w-full flex-1 flex flex-col items-center justify-center">
@@ -60,20 +76,21 @@ const CreateNewEvent = () => {
           </CardDescription>
         </CardHeader>
         <form noValidate id={form.id} onSubmit={form.onSubmit} action={action}>
+          <input type="hidden" name="id" value={id} />
           <CardContent className="grid gap-y-5 w-[450px]">
             <div className="flex flex-col gap-y-2">
               <Label>Title</Label>
               <Input
                 name={fields.title.name}
                 key={fields.title.key}
-                defaultValue={fields.title.initialValue}
+                defaultValue={title}
                 placeholder="30 min meeting"
               />
               <p className="text-red-500 text-sm">{fields.title.errors}</p>
             </div>
 
             <div className="grid gap-y-2 ">
-              <Label>URL Slug</Label>
+              <Label>Url</Label>
               <div className="flex rounded-md">
                 <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-muted bg-muted text-muted-foreground text-sm">
                   localhost:3000/
@@ -81,7 +98,7 @@ const CreateNewEvent = () => {
                 <Input
                   type="text"
                   key={fields.url.key}
-                  defaultValue={fields.url.initialValue}
+                  defaultValue={url}
                   name={fields.url.name}
                   placeholder="example-user-1"
                   className="rounded-l-none"
@@ -96,7 +113,7 @@ const CreateNewEvent = () => {
               <Textarea
                 name={fields.description.name}
                 key={fields.description.key}
-                defaultValue={fields.description.initialValue}
+                defaultValue={description}
                 placeholder="30 min meeting"
               />
               <p className="text-red-500 text-sm">
@@ -109,7 +126,7 @@ const CreateNewEvent = () => {
               <Select
                 name={fields.duration.name}
                 key={fields.duration.key}
-                defaultValue={fields.duration.initialValue}
+                defaultValue={String(duration)}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select the duration" />
@@ -157,12 +174,10 @@ const CreateNewEvent = () => {
             <Button asChild variant="secondary">
               <Link href="/dashboard">Cancel</Link>
             </Button>
-            <SubmitButton text="Create Event Type" className="text-white" />
+            <SubmitButton text="Edit Event Type" className="text-white" />
           </CardFooter>
         </form>
       </Card>
     </div>
   );
-};
-
-export default CreateNewEvent;
+}
