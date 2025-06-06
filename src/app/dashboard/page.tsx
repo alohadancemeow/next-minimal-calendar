@@ -85,7 +85,11 @@ const DashbaordPage = async () => {
               <div className="absolute top-2 right-2">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="icon">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="cursor-pointer"
+                    >
                       <Settings className="size-4" />
                     </Button>
                   </DropdownMenuTrigger>
@@ -120,7 +124,7 @@ const DashbaordPage = async () => {
                 </DropdownMenu>
               </div>
 
-              <Link href={`/dashboard/event/${item.id}`}>
+              <Link href={`/${data.username}/${item.url}`}>
                 <div className="p-5">
                   <div className="flex items-center">
                     <div className="flex-shrink-0">
@@ -147,7 +151,9 @@ const DashbaordPage = async () => {
                   eventTypeId={item.id}
                 />
                 <Link href={`/dashboard/event/${item.id}`}>
-                  <Button className="text-white">Edit Event</Button>
+                  <Button className="text-white cursor-pointer">
+                    Edit Event
+                  </Button>
                 </Link>
               </div>
             </div>

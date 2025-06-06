@@ -36,7 +36,7 @@ export function SubmitButton({ text, variant, className }: iAppProps) {
         <Button
           variant={variant}
           type="submit"
-          className={cn("w-fit", className)}
+          className={cn("w-fit cursor-pointer", className)}
         >
           {text}
         </Button>

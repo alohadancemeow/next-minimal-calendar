@@ -28,6 +28,7 @@ export function MenuActiveSwitcher({
 
   return (
     <Switch
+      className="cursor-pointer"
       defaultChecked={initialChecked}
       disabled={isPending}
       onCheckedChange={(isChecked) => {

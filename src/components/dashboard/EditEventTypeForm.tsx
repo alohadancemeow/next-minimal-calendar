@@ -174,7 +174,10 @@ export function EditEventTypeForm({
             <Button asChild variant="secondary">
               <Link href="/dashboard">Cancel</Link>
             </Button>
-            <SubmitButton text="Edit Event Type" className="text-white" />
+            <SubmitButton
+              text="Edit Event Type"
+              className="text-white cursor-pointer"
+            />
           </CardFooter>
         </form>
       </Card>

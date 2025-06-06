@@ -15,32 +15,32 @@ import { redirect } from "next/navigation";
 // import Logo from "@/public/logo.png";
 import Image from "next/image";
 import { Toaster } from "@/components/ui/sonner";
-import { prisma } from "@/lib/prisma";
+// import { prisma } from "@/lib/prisma";
 import { auth, signOut } from "../../../auth";
 import { DasboardLinks } from "@/components/dashboard/DashboardLink";
 import { ThemeToggle } from "@/components/dashboard/ThemeToggle";
 
-async function getData(id: string) {
-  const data = await prisma.user.findUnique({
-    where: {
-      id: id,
-    },
-    select: {
-      username: true,
-      grantId: true,
-    },
-  });
+// async function getData(id: string) {
+//   const data = await prisma.user.findUnique({
+//     where: {
+//       id: id,
+//     },
+//     select: {
+//       username: true,
+//       grantId: true,
+//     },
+//   });
 
-  if (!data?.username) {
-    return redirect("/onboarding");
-  }
+//   if (!data?.username) {
+//     return redirect("/onboarding");
+//   }
 
-  if (!data.grantId) {
-    return redirect("/onboarding/grant-id");
-  }
+//   if (!data.grantId) {
+//     return redirect("/onboarding/grant-id");
+//   }
 
-  return data;
-}
+//   return data;
+// }
 
 export default async function Dashboard({ children }: { children: ReactNode }) {
   const session = await auth();
@@ -103,7 +103,7 @@ export default async function Dashboard({ children }: { children: ReactNode }) {
                   <Button
                     variant="secondary"
                     size="icon"
-                    className="rounded-full"
+                    className="rounded-full cursor-pointer"
                   >
                     <Image
                       src={session.user.image as string}

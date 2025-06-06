@@ -31,7 +31,9 @@ const DeleteEventType = async ({
           </Button>
           <form action={DeleteEventTypeAction}>
             <input type="hidden" name="id" value={eventTypeId} />
-            <Button variant="destructive">Delete</Button>
+            <Button className="cursor-pointer" variant="destructive">
+              Delete
+            </Button>
           </form>
         </CardFooter>
       </Card>

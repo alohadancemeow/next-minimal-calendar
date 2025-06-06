@@ -64,6 +64,7 @@ const AvailabilityPage = async () => {
               <input type="hidden" name={`id-${item.id}`} value={item.id} />
               <div className="flex items-center gap-x-3">
                 <Switch
+                  className="cursor-pointer"
                   name={`isActive-${item.id}`}
                   defaultChecked={item.isActive}
                 />
@@ -101,7 +102,10 @@ const AvailabilityPage = async () => {
           ))}
         </CardContent>
         <CardFooter>
-          <SubmitButton text="Save Changes" className="text-white mt-3" />
+          <SubmitButton
+            text="Save Changes"
+            className="text-white mt-3 cursor-pointer"
+          />
         </CardFooter>
       </form>
     </Card>
