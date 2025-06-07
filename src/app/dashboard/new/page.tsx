@@ -26,7 +26,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import Link from "next/link";
-import { useActionState, useState } from "react";
+import { useActionState, useState, useRef } from "react";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { CreateEventTypeAction } from "@/actions/event";
 
@@ -43,6 +43,14 @@ const CreateNewEvent = () => {
     shouldRevalidate: "onInput",
   });
   const [activePlatform, setActivePlatform] = useState<Platform>("Google Meet");
+  const urlInputRef = useRef<HTMLInputElement>(null);
+
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const title = e.target.value;
+    if (urlInputRef.current) {
+      urlInputRef.current.value = title.toLowerCase().replace(/\s+/g, "-");
+    }
+  };
 
   const togglePlatform = (platform: Platform) => {
     setActivePlatform(platform);
@@ -68,6 +76,7 @@ const CreateNewEvent = () => {
                 key={fields.title.key}
                 defaultValue={fields.title.initialValue}
                 placeholder="30 min meeting"
+                onChange={handleTitleChange}
               />
               <p className="text-red-500 text-sm">{fields.title.errors}</p>
             </div>
@@ -85,6 +94,7 @@ const CreateNewEvent = () => {
                   name={fields.url.name}
                   placeholder="example-user-1"
                   className="rounded-l-none"
+                  ref={urlInputRef}
                 />
               </div>
 

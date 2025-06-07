@@ -70,7 +70,7 @@ export async function createMeetingAction(formData: FormData) {
     console.log(error);
   }
 
-  redirect(`/success`);
+  redirect(`/success/${formData.get("eventTypeId")}`);
 }
 
 export async function cancelMeetingAction(formData: FormData) {

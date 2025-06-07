@@ -93,7 +93,7 @@ export async function EditEventTypeAction(
     console.log(error, "error");
   }
 
-  redirect(`/dashboard/${formData.get("id")}`);
+  redirect(`/dashboard`);
 }
 
 export async function DeleteEventTypeAction(formData: FormData) {

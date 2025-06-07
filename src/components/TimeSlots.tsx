@@ -86,6 +86,7 @@ function calculateAvailableTimeSlots(
   // console.log(nylasData, "nylasData");
 
   // Extract busy slots from Nylas data
+  // @ts-expect-error - TODO: fix this
   const busySlots = nylasData.data[0].timeSlots.map((slot: any) => ({
     start: fromUnixTime(slot.startTime),
     end: fromUnixTime(slot.endTime),

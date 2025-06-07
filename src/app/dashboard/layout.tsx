@@ -9,7 +9,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { ReactNode } from "react";
 import { redirect } from "next/navigation";
 // import Logo from "@/public/logo.png";
@@ -54,7 +60,6 @@ export default async function Dashboard({ children }: { children: ReactNode }) {
 
   return (
     <>
-      {/* Mobile */}
       <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
         <div className="hidden border-r bg-muted/40 md:block">
           <div className="flex h-full max-h-screen flex-col gap-2">
@@ -75,7 +80,6 @@ export default async function Dashboard({ children }: { children: ReactNode }) {
           </div>
         </div>
 
-        {/* Web */}
         <div className="flex flex-col">
           <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
             <Sheet>
@@ -91,6 +95,9 @@ export default async function Dashboard({ children }: { children: ReactNode }) {
               </SheetTrigger>
               <SheetContent side="left" className="flex flex-col">
                 <nav className="grid gap-2 mt-10">
+                  <SheetHeader>
+                    <SheetTitle>My Calendar</SheetTitle>
+                  </SheetHeader>
                   <DasboardLinks />
                 </nav>
               </SheetContent>

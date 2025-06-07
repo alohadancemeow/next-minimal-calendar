@@ -27,7 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useActionState, useState } from "react";
+import { useActionState, useState, useRef } from "react";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 interface iAppProps {
@@ -61,6 +61,14 @@ export function EditEventTypeForm({
   const [activePlatform, setActivePlatform] = useState<Platform>(
     callProvider as Platform
   );
+  const urlInputRef = useRef<HTMLInputElement>(null);
+
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const title = e.target.value;
+    if (urlInputRef.current) {
+      urlInputRef.current.value = title.toLowerCase().replace(/\s+/g, "-");
+    }
+  };
 
   const togglePlatform = (platform: Platform) => {
     setActivePlatform(platform);
@@ -85,6 +93,7 @@ export function EditEventTypeForm({
                 key={fields.title.key}
                 defaultValue={title}
                 placeholder="30 min meeting"
+                onChange={handleTitleChange}
               />
               <p className="text-red-500 text-sm">{fields.title.errors}</p>
             </div>
@@ -102,9 +111,9 @@ export function EditEventTypeForm({
                   name={fields.url.name}
                   placeholder="example-user-1"
                   className="rounded-l-none"
+                  ref={urlInputRef}
                 />
               </div>
-
               <p className="text-red-500 text-sm">{fields.url.errors}</p>
             </div>
 

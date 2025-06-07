@@ -52,6 +52,7 @@ async function getData(id: string) {
 const DashbaordPage = async () => {
   const session = await requireUser();
   const data = await getData(session.user?.id as string);
+  // console.log(data, "data");
 
   return (
     <>

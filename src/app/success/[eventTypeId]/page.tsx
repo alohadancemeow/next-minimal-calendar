@@ -1,10 +1,30 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { prisma } from "@/lib/prisma";
 import { Check } from "lucide-react";
 import Link from "next/link";
 
-export default function SuccessPage() {
+export const SuccessPage = async ({
+  params,
+}: {
+  params: { eventTypeId: string };
+}) => {
+  const { eventTypeId } = await params;
+
+  const eventType = await prisma.eventType.findUnique({
+    where: {
+      id: eventTypeId,
+    },
+    select: {
+      title: true,
+      description: true,
+      duration: true,
+      videoCallSoftware: true,
+      createdAt: true,
+    },
+  });
+
   return (
     <div className="h-screen w-screen flex items-center justify-center">
       <Card className="max-w-[400px] w-full mx-auto">
@@ -27,29 +47,52 @@ export default function SuccessPage() {
               <h1 className="font-medium">What</h1>
             </div>
             <div className="col-span-2">
-              <p className="text-muted-foreground">Design Workshop</p>
+              <p className="text-muted-foreground">{eventType?.title}</p>
             </div>
 
             <div className="col-span-1">
               <h1 className="font-medium">When</h1>
             </div>
             <div className="col-span-2">
-              <p className="text-muted-foreground">10:00 - 12:00</p>
+              <p className="text-muted-foreground">
+                {eventType?.createdAt && eventType?.duration ? (
+                  <>
+                    {new Date(eventType.createdAt).toLocaleTimeString("en-US", {
+                      hour: "numeric",
+                      minute: "2-digit",
+                      hour12: true,
+                    })}{" "}
+                    -{" "}
+                    {new Date(
+                      new Date(eventType.createdAt).getTime() +
+                        eventType.duration * 60000
+                    ).toLocaleTimeString("en-US", {
+                      hour: "numeric",
+                      minute: "2-digit",
+                      hour12: true,
+                    })}
+                  </>
+                ) : null}
+              </p>
             </div>
             <div className="col-span-1">
               <h1 className="font-medium">Where</h1>
             </div>
             <div className="col-span-2">
-              <p className="text-muted-foreground">Online</p>
+              <p className="text-muted-foreground">
+                {eventType?.videoCallSoftware}
+              </p>
             </div>
           </div>
         </CardContent>
         <CardFooter>
           <Button className="w-full text-white" asChild>
-            <Link href="/">Close this Page</Link>
+            <Link href="/dashboard/meetings">Go to Meetings</Link>
           </Button>
         </CardFooter>
       </Card>
     </div>
   );
-}
+};
+
+export default SuccessPage;

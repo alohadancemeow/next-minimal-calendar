@@ -131,12 +131,18 @@ const BookingPage = async ({
               />
               <div className="flex flex-col gap-y-2">
                 <Label>Your Name</Label>
-                <Input name="name" placeholder="Your Name" />
+                <Input name="name" placeholder="Your Name" required />
               </div>
 
               <div className="flex flex-col gap-y-2">
                 <Label>Your Email</Label>
-                <Input name="email" placeholder="johndoe@gmail.com" />
+                <Input
+                  name="email"
+                  type="email"
+                  placeholder="johndoe@gmail.com"
+                  required
+                  pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                />
               </div>
 
               <SubmitButton text="Book Meeting" className="text-white" />
@@ -199,7 +205,7 @@ const BookingPage = async ({
 
             <TimeSlots
               selectedDate={selectedDate}
-              userName={params.username}
+              userName={username}
               meetingDuration={eventType.duration}
             />
           </CardContent>
