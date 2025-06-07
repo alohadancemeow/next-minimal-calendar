@@ -83,7 +83,7 @@ function calculateAvailableTimeSlots(
     new Date()
   );
 
-  console.log(nylasData, "nylasData");
+  // console.log(nylasData, "nylasData");
 
   // Extract busy slots from Nylas data
   const busySlots = nylasData.data[0].timeSlots.map((slot: any) => ({
