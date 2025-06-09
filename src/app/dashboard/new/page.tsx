@@ -60,7 +60,7 @@ const CreateNewEvent = () => {
 
   return (
     <div className="h-full w-full flex-1 flex flex-col items-center justify-center">
-      <Card>
+      <Card className="w-full max-w-lg">
         <CardHeader>
           <CardTitle>Add new appointment type</CardTitle>
           <CardDescription>
@@ -68,7 +68,7 @@ const CreateNewEvent = () => {
           </CardDescription>
         </CardHeader>
         <form noValidate id={form.id} onSubmit={form.onSubmit} action={action}>
-          <CardContent className="grid gap-y-5 w-[450px]">
+          <CardContent className="grid gap-y-5">
             <div className="flex flex-col gap-y-2">
               <Label>Title</Label>
               <Input

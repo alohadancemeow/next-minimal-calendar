@@ -15,7 +15,7 @@ import { parseWithZod } from "@conform-to/zod";
 import { onboardingSchemaLocale } from "@/lib/zodSchemas";
 import { useForm } from "@conform-to/react";
 import { onboardingAction } from "@/actions/onboarding";
-import { useActionState } from "react";
+import { useActionState, useRef } from "react";
 
 const OnboardingPage = () => {
   const [lastResult, action] = useActionState(onboardingAction, undefined);
@@ -32,6 +32,15 @@ const OnboardingPage = () => {
     shouldValidate: "onBlur",
     shouldRevalidate: "onInput",
   });
+
+  const urlInputRef = useRef<HTMLInputElement>(null);
+
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const title = e.target.value;
+    if (urlInputRef.current) {
+      urlInputRef.current.value = title.toLowerCase().replace(/\s+/g, "-");
+    }
+  };
 
   return (
     <div className="h-screen w-screen flex items-center justify-center">
@@ -51,7 +60,8 @@ const OnboardingPage = () => {
                 name={fields.fullName.name}
                 defaultValue={fields.fullName.initialValue}
                 key={fields.fullName.key}
-                placeholder="Jan marshal"
+                placeholder="John Doe"
+                onChange={handleTitleChange}
               />
               <p className="text-red-500 text-sm">{fields.fullName.errors}</p>
             </div>
@@ -69,6 +79,7 @@ const OnboardingPage = () => {
                   name={fields.username.name}
                   placeholder="example-user-1"
                   className="rounded-l-none"
+                  ref={urlInputRef}
                 />
               </div>
               <p className="text-red-500 text-sm">{fields.username.errors}</p>

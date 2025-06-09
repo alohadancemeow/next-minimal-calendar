@@ -16,6 +16,7 @@ import { format, fromUnixTime } from "date-fns";
 import { Video } from "lucide-react";
 import { EmptyState } from "@/components/dashboard/EmptyState";
 import { SubmitButton } from "@/components/SubmitButton";
+import { redirect } from "next/navigation";
 
 interface NylasEvent {
   id: string;
@@ -46,13 +47,17 @@ async function getData(userId: string) {
     },
   });
 
-  if (!userData) {
-    throw new Error("User not found");
+  if (!userData?.grantId || !userData?.grantEmail) {
+    redirect("/dashboard");
+    // throw new Error("User not found or not connected to calendar");
   }
+
+  const { grantId, grantEmail } = userData;
+
   const data = (await nylas.events.list({
-    identifier: userData?.grantId as string,
+    identifier: grantId,
     queryParams: {
-      calendarId: userData?.grantEmail as string,
+      calendarId: grantEmail,
     },
   })) as NylasResponse<NylasEvent[]>;
 
@@ -61,7 +66,20 @@ async function getData(userId: string) {
 
 const MeetingsPage = async () => {
   const session = await auth();
-  const data = await getData(session?.user?.id as string);
+
+  if (!session?.user?.id) {
+    return (
+      <EmptyState
+        title="Not authenticated"
+        description="Please sign in to view your meetings."
+        buttonText="Sign in"
+        href="/api/auth/signin"
+      />
+    );
+  }
+
+  const data = await getData(session.user.id);
+  console.log(data, "data");
 
   // console.log(data.data[0].when, "data");
   // console.log(data.data, "participants");

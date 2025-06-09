@@ -150,7 +150,7 @@ const BookingPage = async ({
           </CardContent>
         </Card>
       ) : (
-        <Card className="w-full max-w-[1000px] mx-auto ">
+        <Card className="w-full max-w-[1000px] mx-auto">
           <CardContent className="p-5 md:grid md:grid-cols-[1fr_auto_1fr_auto_1fr] md:gap-4">
             <div>
               <Image
