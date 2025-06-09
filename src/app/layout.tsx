@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Roboto } from "next/font/google";
 import "./globals.css";
 
 import { ThemeProvider } from "@/components/dashboard/ThemeProvider";
@@ -7,13 +7,8 @@ import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import { extractRouterConfig } from "uploadthing/server";
 import { ourFileRouter } from "@/app/api/uploadthing/core";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const roboto = Roboto({
+  weight: ["400", "500", "700"],
   subsets: ["latin"],
 });
 
@@ -30,7 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${roboto.className}  antialiased`}
         suppressHydrationWarning
       >
         <ThemeProvider

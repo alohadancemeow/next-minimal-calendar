@@ -2,6 +2,7 @@ import { cancelMeetingAction } from "@/actions/meeting";
 import { nylas } from "@/lib/nylas";
 import { auth } from "../../../../auth";
 import { prisma } from "@/lib/prisma";
+import { NylasResponse } from "nylas";
 
 import {
   Card,
@@ -15,6 +16,24 @@ import { format, fromUnixTime } from "date-fns";
 import { Video } from "lucide-react";
 import { EmptyState } from "@/components/dashboard/EmptyState";
 import { SubmitButton } from "@/components/SubmitButton";
+
+interface NylasEvent {
+  id: string;
+  title: string;
+  when: {
+    startTime: number;
+    endTime: number;
+  };
+  conferencing?: {
+    details?: {
+      url: string;
+    };
+  };
+  participants: Array<{
+    name: string;
+    email: string;
+  }>;
+}
 
 async function getData(userId: string) {
   const userData = await prisma.user.findUnique({
@@ -30,12 +49,12 @@ async function getData(userId: string) {
   if (!userData) {
     throw new Error("User not found");
   }
-  const data = await nylas.events.list({
+  const data = (await nylas.events.list({
     identifier: userData?.grantId as string,
     queryParams: {
       calendarId: userData?.grantEmail as string,
     },
-  });
+  })) as NylasResponse<NylasEvent[]>;
 
   return data;
 }
@@ -71,25 +90,43 @@ const MeetingsPage = async () => {
                 <div className="grid grid-cols-3 justify-between items-center">
                   <div>
                     <p className="text-muted-foreground text-sm">
-                      {/* @ts-expect-error - TODO: fix this */}
-                      {format(fromUnixTime(item.when.startTime), "EEE, dd MMM")}
+                      {item.when?.startTime
+                        ? format(
+                            fromUnixTime(item.when.startTime),
+                            "EEE, dd MMM"
+                          )
+                        : "No date"}
                     </p>
                     <p className="text-muted-foreground text-xs pt-1">
-                      {/* @ts-expect-error - TODO: fix this */}
-                      {format(fromUnixTime(item.when.startTime), "hh:mm a")} -
-                      {/* @ts-expect-error - TODO: fix this */}
-                      {format(fromUnixTime(item.when.endTime), "hh:mm a")}
+                      {item.when?.startTime && item.when?.endTime ? (
+                        <>
+                          {format(fromUnixTime(item.when.startTime), "hh:mm a")}{" "}
+                          - {format(fromUnixTime(item.when.endTime), "hh:mm a")}
+                        </>
+                      ) : (
+                        "No time"
+                      )}
                     </p>
                     <div className="flex items-center mt-1">
-                      <Video className="size-4 mr-2 text-primary" />{" "}
-                      <a
-                        className="text-xs text-primary underline underline-offset-4"
-                        target="_blank"
-                        // @ts-expect-error - TODO: fix this
-                        href={item.conferencing?.details?.url}
-                      >
-                        Join Meeting
-                      </a>
+                      {
+                        item.conferencing?.details?.url ? (
+                          <>
+                            <Video className="size-4 mr-2 text-primary" />
+                            <a
+                              className="text-xs text-primary underline underline-offset-4"
+                              target="_blank"
+                              href={item.conferencing.details.url}
+                            >
+                              Join Meeting
+                            </a>
+                          </>
+                        ) : null
+                        // (
+                        //   <span className="text-xs text-muted-foreground">
+                        //     No video call link available
+                        //   </span>
+                        // )
+                      }
                     </div>
                   </div>
                   <div className="flex flex-col items-start">
