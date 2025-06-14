@@ -49,12 +49,15 @@ async function getData(username: string, eventName: string) {
   return eventType;
 }
 
+type Params = Promise<{ username: string; eventName: string }>;
+type SearchParams = Promise<{ date?: string; time?: string }>;
+
 const BookingPage = async ({
   params,
   searchParams,
 }: {
-  params: { username: string; eventName: string };
-  searchParams: { date?: string; time?: string };
+  params: Params;
+  searchParams: SearchParams;
 }) => {
   const { username, eventName } = await params;
   const { date, time } = await searchParams;

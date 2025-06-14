@@ -23,11 +23,10 @@ async function getData(eventTypeId: string) {
 
   return data;
 }
-const EditEventTypePage = async ({
-  params,
-}: {
-  params: { eventTypeId: string };
-}) => {
+
+type Params = Promise<{ eventTypeId: string }>;
+
+const EditEventTypePage = async ({ params }: { params: Params }) => {
   const { eventTypeId } = await params;
   const data = await getData(eventTypeId);
 

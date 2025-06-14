@@ -9,11 +9,9 @@ import {
 } from "@/components/ui/card";
 import Link from "next/link";
 
-const DeleteEventType = async ({
-  params,
-}: {
-  params: { eventTypeId: string };
-}) => {
+type Params = Promise<{ eventTypeId: string }>;
+
+const DeleteEventType = async ({ params }: { params: Params }) => {
   const { eventTypeId } = await params;
 
   return (
