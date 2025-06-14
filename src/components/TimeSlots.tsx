@@ -81,7 +81,7 @@ export async function TimeSlots({
         </span>
       </p>
 
-      <div className="mt-3 max-h-[300px] overflow-y-auto">
+      <div className="mt-3 max-h-[300px] overflow-y-auto scrollbar-hide">
         {availableSlots.length > 0 ? (
           availableSlots.map((slot, index) => (
             <Link
