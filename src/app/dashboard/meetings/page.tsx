@@ -17,6 +17,18 @@ import { Video } from "lucide-react";
 import { EmptyState } from "@/components/dashboard/EmptyState";
 import { SubmitButton } from "@/components/SubmitButton";
 import { redirect } from "next/navigation";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 
 interface NylasEvent {
   id: string;
@@ -79,10 +91,6 @@ const MeetingsPage = async () => {
   }
 
   const data = await getData(session.user.id);
-  console.log(data, "data");
-
-  // console.log(data.data[0].when, "data");
-  // console.log(data.data, "participants");
 
   return (
     <>
@@ -103,8 +111,7 @@ const MeetingsPage = async () => {
           </CardHeader>
           <CardContent>
             {data.data.map((item) => (
-              <form key={item.id} action={cancelMeetingAction}>
-                <input type="hidden" name="eventId" value={item.id} />
+              <div key={item.id}>
                 <div className="grid grid-cols-3 justify-between items-center">
                   <div>
                     <p className="text-muted-foreground text-sm">
@@ -126,25 +133,18 @@ const MeetingsPage = async () => {
                       )}
                     </p>
                     <div className="flex items-center mt-1">
-                      {
-                        item.conferencing?.details?.url ? (
-                          <>
-                            <Video className="size-4 mr-2 text-primary" />
-                            <a
-                              className="text-xs text-primary underline underline-offset-4"
-                              target="_blank"
-                              href={item.conferencing.details.url}
-                            >
-                              Join Meeting
-                            </a>
-                          </>
-                        ) : null
-                        // (
-                        //   <span className="text-xs text-muted-foreground">
-                        //     No video call link available
-                        //   </span>
-                        // )
-                      }
+                      {item.conferencing?.details?.url ? (
+                        <>
+                          <Video className="size-4 mr-2 text-primary" />
+                          <a
+                            className="text-xs text-primary underline underline-offset-4"
+                            target="_blank"
+                            href={item.conferencing.details.url}
+                          >
+                            Join Meeting
+                          </a>
+                        </>
+                      ) : null}
                     </div>
                   </div>
                   <div className="flex flex-col items-start">
@@ -153,28 +153,48 @@ const MeetingsPage = async () => {
                       {item.participants.map((participant, index) => (
                         <span key={index}>{`You and ${participant.name}`}</span>
                       ))}
-                      {/* {item.participants.map((participant, index) => (
-                        <span key={participant.email}>
-                          {participant.email === session?.user?.email
-                            ? "You"
-                            : participant.name}
-                          {index < item.participants.length - 1
-                            ? index === item.participants.length - 2
-                              ? " and "
-                              : ", "
-                            : ""}
-                        </span>
-                      ))} */}
                     </p>
                   </div>
-                  <SubmitButton
-                    text="Cancel Event"
-                    variant="destructive"
-                    className="w-fit flex ml-auto"
-                  />
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        className="w-fit flex ml-auto cursor-pointer"
+                        variant="destructive"
+                      >
+                        Cancel Event
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>
+                          Are you absolutely sure?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This action cannot be undone. This will permanently
+                          delete your event and remove your data from our
+                          servers.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel className="cursor-pointer">
+                          Cancel
+                        </AlertDialogCancel>
+                        <form action={cancelMeetingAction}>
+                          <input type="hidden" name="eventId" value={item.id} />
+                          <AlertDialogAction asChild>
+                            <SubmitButton
+                              text="Continue"
+                              variant="destructive"
+                              className="text-white"
+                            />
+                          </AlertDialogAction>
+                        </form>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
                 <Separator className="my-3" />
-              </form>
+              </div>
             ))}
           </CardContent>
         </Card>
@@ -184,36 +204,3 @@ const MeetingsPage = async () => {
 };
 
 export default MeetingsPage;
-
-{
-  /* <form key={item.id} action={cancelMeetingAction}>
-                <input type="hidden" name="eventId" value={item.id} />
-                <div className="grid grid-cols-3 justify-between items-center">
-                  <div>
-                    <p>
-                      {format(fromUnixTime(item.when.startTime), "EEE, dd MMM")}
-                    </p>
-                    <p>
-                      {format(fromUnixTime(item.when.startTime), "hh:mm a")} -{" "}
-                      {format(fromUnixTime(item.when.endTime), "hh:mm a")}
-                    </p>
-                    <div className="flex items-center">
-                      <Video className="size-4 mr-2 text-primary" />{" "}
-                      <a target="_blank" href={item.conferencing.details.url}>
-                        Join Meeting
-                      </a>
-                    </div>
-                  </div>
-                  <div className="flex flex-col items-center">
-                    <h2>{item.title}</h2>
-                    <p>You and {item.participants[0].name}</p>
-                  </div>
-                  <SubmitButton
-                    text="Cancel Event"
-                    variant="destructive"
-                    className="w-fit flex ml-auto"
-                  />
-                </div>
-                <Separator className="my-3" />
-              </form> */
-}

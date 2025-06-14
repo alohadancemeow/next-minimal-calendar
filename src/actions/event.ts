@@ -102,7 +102,7 @@ export async function DeleteEventTypeAction(formData: FormData) {
   try {
     await prisma.eventType.delete({
       where: {
-        id: formData.get("id") as string,
+        id: formData.get("eventId") as string,
         userId: session.user?.id as string,
       },
     });
