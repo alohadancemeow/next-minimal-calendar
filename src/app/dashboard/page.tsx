@@ -18,6 +18,19 @@ import {
 import { EmptyState } from "@/components/dashboard/EmptyState";
 import { CopyLinkMenuItem } from "@/components/dashboard/CopyLinkMenuItem";
 import { MenuActiveSwitcher } from "@/components/dashboard/MenuActiveSwitcher";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { SubmitButton } from "@/components/SubmitButton";
+import { DeleteEventTypeAction } from "@/actions/event";
 
 async function getData(id: string) {
   const data = await prisma.user.findUnique({
@@ -116,10 +129,45 @@ const DashbaordPage = async () => {
                     </DropdownMenuGroup>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
-                      <Link href={`/dashboard/event/${item.id}/delete`}>
-                        <Trash className="mr-2 h-4 w-4" />
-                        <span>Delete</span>
-                      </Link>
+                      <AlertDialog>
+                        <AlertDialogTrigger>
+                          <div className="flex items-center gap-2">
+                            <Trash className="mr-2 h-4 w-4 text-red-500" />
+                            <span className="text-red-500">Delete</span>
+                          </div>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Are you absolutely sure?
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This action cannot be undone. This will
+                              permanently delete your event and remove your data
+                              from our servers.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel className="cursor-pointer">
+                              Cancel
+                            </AlertDialogCancel>
+                            <form action={DeleteEventTypeAction}>
+                              <input
+                                type="hidden"
+                                name="eventId"
+                                value={item.id}
+                              />
+                              <AlertDialogAction asChild>
+                                <SubmitButton
+                                  text="Continue"
+                                  variant="destructive"
+                                  className="text-white"
+                                />
+                              </AlertDialogAction>
+                            </form>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -133,14 +181,14 @@ const DashbaordPage = async () => {
                     </div>
                     <div className="ml-5 w-0 flex-1">
                       <dl>
-                        <dt className="text-xs font-medium text-gray-500 truncate">
-                          {item.duration} Minutes Meeting
-                        </dt>
                         <dd>
                           <div className="text-lg font-medium">
                             {item.title}
                           </div>
                         </dd>
+                        <dt className="text-xs font-medium text-gray-500 truncate">
+                          {item.duration} Minutes Meeting
+                        </dt>
                       </dl>
                     </div>
                   </div>

@@ -3,10 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
-// import Image from "next/image";
 import { useFormStatus } from "react-dom";
-// import GithubLogo from "/globe.svg";
-// import GoogleLogo from "/globe.svg";
 
 interface iAppProps {
   text: string;

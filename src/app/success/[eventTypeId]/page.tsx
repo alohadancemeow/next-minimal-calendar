@@ -5,11 +5,9 @@ import { prisma } from "@/lib/prisma";
 import { Check } from "lucide-react";
 import Link from "next/link";
 
-export const SuccessPage = async ({
-  params,
-}: {
-  params: { eventTypeId: string };
-}) => {
+type Params = Promise<{ eventTypeId: string }>;
+
+export const SuccessPage = async ({ params }: { params: Params }) => {
   const { eventTypeId } = await params;
 
   const eventType = await prisma.eventType.findUnique({

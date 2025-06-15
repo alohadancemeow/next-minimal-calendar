@@ -18,35 +18,12 @@ import {
 } from "@/components/ui/sheet";
 import { ReactNode } from "react";
 import { redirect } from "next/navigation";
-// import Logo from "@/public/logo.png";
 import Image from "next/image";
 import { Toaster } from "@/components/ui/sonner";
-// import { prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import { auth, signOut } from "../../../auth";
 import { DasboardLinks } from "@/components/dashboard/DashboardLink";
 import { ThemeToggle } from "@/components/dashboard/ThemeToggle";
-
-// async function getData(id: string) {
-//   const data = await prisma.user.findUnique({
-//     where: {
-//       id: id,
-//     },
-//     select: {
-//       username: true,
-//       grantId: true,
-//     },
-//   });
-
-//   if (!data?.username) {
-//     return redirect("/onboarding");
-//   }
-
-//   if (!data.grantId) {
-//     return redirect("/onboarding/grant-id");
-//   }
-
-//   return data;
-// }
 
 export default async function Dashboard({ children }: { children: ReactNode }) {
   const session = await auth();
@@ -55,8 +32,19 @@ export default async function Dashboard({ children }: { children: ReactNode }) {
     return redirect("/");
   }
 
-  // const data = await getData(session.user.id as string);
+  const data = await prisma.user.findUnique({
+    where: {
+      id: session.user.id,
+    },
+    select: {
+      username: true,
+      grantId: true,
+    },
+  });
+
   // console.log(data, data);
+  if (!data?.username) return redirect("/onboarding");
+  if (!data?.grantId) return redirect("/onboarding/grant-id");
 
   return (
     <>

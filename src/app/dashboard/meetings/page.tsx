@@ -2,6 +2,7 @@ import { cancelMeetingAction } from "@/actions/meeting";
 import { nylas } from "@/lib/nylas";
 import { auth } from "../../../../auth";
 import { prisma } from "@/lib/prisma";
+import { NylasResponse } from "nylas";
 
 import {
   Card,
@@ -15,6 +16,37 @@ import { format, fromUnixTime } from "date-fns";
 import { Video } from "lucide-react";
 import { EmptyState } from "@/components/dashboard/EmptyState";
 import { SubmitButton } from "@/components/SubmitButton";
+import { redirect } from "next/navigation";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+
+interface NylasEvent {
+  id: string;
+  title: string;
+  when: {
+    startTime: number;
+    endTime: number;
+  };
+  conferencing?: {
+    details?: {
+      url: string;
+    };
+  };
+  participants: Array<{
+    name: string;
+    email: string;
+  }>;
+}
 
 async function getData(userId: string) {
   const userData = await prisma.user.findUnique({
@@ -27,25 +59,38 @@ async function getData(userId: string) {
     },
   });
 
-  if (!userData) {
-    throw new Error("User not found");
+  if (!userData?.grantId || !userData?.grantEmail) {
+    redirect("/dashboard");
+    // throw new Error("User not found or not connected to calendar");
   }
-  const data = await nylas.events.list({
-    identifier: userData?.grantId as string,
+
+  const { grantId, grantEmail } = userData;
+
+  const data = (await nylas.events.list({
+    identifier: grantId,
     queryParams: {
-      calendarId: userData?.grantEmail as string,
+      calendarId: grantEmail,
     },
-  });
+  })) as NylasResponse<NylasEvent[]>;
 
   return data;
 }
 
 const MeetingsPage = async () => {
   const session = await auth();
-  const data = await getData(session?.user?.id as string);
 
-  // console.log(data.data[0].when, "data");
-  // console.log(data.data, "participants");
+  if (!session?.user?.id) {
+    return (
+      <EmptyState
+        title="Not authenticated"
+        description="Please sign in to view your meetings."
+        buttonText="Sign in"
+        href="/api/auth/signin"
+      />
+    );
+  }
+
+  const data = await getData(session.user.id);
 
   return (
     <>
@@ -66,30 +111,40 @@ const MeetingsPage = async () => {
           </CardHeader>
           <CardContent>
             {data.data.map((item) => (
-              <form key={item.id} action={cancelMeetingAction}>
-                <input type="hidden" name="eventId" value={item.id} />
+              <div key={item.id}>
                 <div className="grid grid-cols-3 justify-between items-center">
                   <div>
                     <p className="text-muted-foreground text-sm">
-                      {/* @ts-expect-error - TODO: fix this */}
-                      {format(fromUnixTime(item.when.startTime), "EEE, dd MMM")}
+                      {item.when?.startTime
+                        ? format(
+                            fromUnixTime(item.when.startTime),
+                            "EEE, dd MMM"
+                          )
+                        : "No date"}
                     </p>
                     <p className="text-muted-foreground text-xs pt-1">
-                      {/* @ts-expect-error - TODO: fix this */}
-                      {format(fromUnixTime(item.when.startTime), "hh:mm a")} -
-                      {/* @ts-expect-error - TODO: fix this */}
-                      {format(fromUnixTime(item.when.endTime), "hh:mm a")}
+                      {item.when?.startTime && item.when?.endTime ? (
+                        <>
+                          {format(fromUnixTime(item.when.startTime), "hh:mm a")}{" "}
+                          - {format(fromUnixTime(item.when.endTime), "hh:mm a")}
+                        </>
+                      ) : (
+                        "No time"
+                      )}
                     </p>
                     <div className="flex items-center mt-1">
-                      <Video className="size-4 mr-2 text-primary" />{" "}
-                      <a
-                        className="text-xs text-primary underline underline-offset-4"
-                        target="_blank"
-                        // @ts-expect-error - TODO: fix this
-                        href={item.conferencing?.details?.url}
-                      >
-                        Join Meeting
-                      </a>
+                      {item.conferencing?.details?.url ? (
+                        <>
+                          <Video className="size-4 mr-2 text-primary" />
+                          <a
+                            className="text-xs text-primary underline underline-offset-4"
+                            target="_blank"
+                            href={item.conferencing.details.url}
+                          >
+                            Join Meeting
+                          </a>
+                        </>
+                      ) : null}
                     </div>
                   </div>
                   <div className="flex flex-col items-start">
@@ -98,28 +153,48 @@ const MeetingsPage = async () => {
                       {item.participants.map((participant, index) => (
                         <span key={index}>{`You and ${participant.name}`}</span>
                       ))}
-                      {/* {item.participants.map((participant, index) => (
-                        <span key={participant.email}>
-                          {participant.email === session?.user?.email
-                            ? "You"
-                            : participant.name}
-                          {index < item.participants.length - 1
-                            ? index === item.participants.length - 2
-                              ? " and "
-                              : ", "
-                            : ""}
-                        </span>
-                      ))} */}
                     </p>
                   </div>
-                  <SubmitButton
-                    text="Cancel Event"
-                    variant="destructive"
-                    className="w-fit flex ml-auto"
-                  />
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        className="w-fit flex ml-auto cursor-pointer"
+                        variant="destructive"
+                      >
+                        Cancel Event
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>
+                          Are you absolutely sure?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This action cannot be undone. This will permanently
+                          delete your event and remove your data from our
+                          servers.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel className="cursor-pointer">
+                          Cancel
+                        </AlertDialogCancel>
+                        <form action={cancelMeetingAction}>
+                          <input type="hidden" name="eventId" value={item.id} />
+                          <AlertDialogAction asChild>
+                            <SubmitButton
+                              text="Continue"
+                              variant="destructive"
+                              className="text-white"
+                            />
+                          </AlertDialogAction>
+                        </form>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
                 <Separator className="my-3" />
-              </form>
+              </div>
             ))}
           </CardContent>
         </Card>
@@ -129,36 +204,3 @@ const MeetingsPage = async () => {
 };
 
 export default MeetingsPage;
-
-{
-  /* <form key={item.id} action={cancelMeetingAction}>
-                <input type="hidden" name="eventId" value={item.id} />
-                <div className="grid grid-cols-3 justify-between items-center">
-                  <div>
-                    <p>
-                      {format(fromUnixTime(item.when.startTime), "EEE, dd MMM")}
-                    </p>
-                    <p>
-                      {format(fromUnixTime(item.when.startTime), "hh:mm a")} -{" "}
-                      {format(fromUnixTime(item.when.endTime), "hh:mm a")}
-                    </p>
-                    <div className="flex items-center">
-                      <Video className="size-4 mr-2 text-primary" />{" "}
-                      <a target="_blank" href={item.conferencing.details.url}>
-                        Join Meeting
-                      </a>
-                    </div>
-                  </div>
-                  <div className="flex flex-col items-center">
-                    <h2>{item.title}</h2>
-                    <p>You and {item.participants[0].name}</p>
-                  </div>
-                  <SubmitButton
-                    text="Cancel Event"
-                    variant="destructive"
-                    className="w-fit flex ml-auto"
-                  />
-                </div>
-                <Separator className="my-3" />
-              </form> */
-}
