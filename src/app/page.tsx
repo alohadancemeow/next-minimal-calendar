@@ -1,11 +1,6 @@
 import { redirect } from "next/navigation";
 import { auth } from "../../auth";
-import { Navbar } from "@/components/landingPage/Navbar";
-import { Hero } from "@/components/landingPage/Hero";
-import { Logos } from "@/components/landingPage/Logos";
-import { Features } from "@/components/landingPage/Features";
-import { Testimonial } from "@/components/landingPage/Testimonial";
-import { CTA } from "@/components/landingPage/Cta";
+import { LoginForm } from "@/components/LoginForm";
 
 export default async function Home() {
   const session = await auth();
@@ -15,13 +10,10 @@ export default async function Home() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <Navbar />
-      <Hero />
-      <Logos />
-      <Features />
-      <Testimonial />
-      <CTA />
+    <div className="bg-muted flex min-h-svh flex-col items-center justify-center p-6 md:p-10">
+      <div className="w-full max-w-sm md:max-w-3xl">
+        <LoginForm />
+      </div>
     </div>
   );
 }
